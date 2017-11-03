@@ -1,0 +1,36 @@
+swagger: "2.0"
+info:
+  description: "This is the LiquorCabinet API. Given what's in your Liquor Cabinet, find out what cocktails you can make!"
+  version: "1.0.0"
+  title: "Liquor Cabinet"
+  contact: 
+    email: "theodorecarmstrong@gmail.com"
+  license:
+    name: "GNU AGPLv3"
+    url: "https://www.gnu.org/licenses/agpl-3.0.txt"
+basePath: "/v1"
+tags:
+- name: "cocktails"
+  description: "Everything about cocktails"
+- name: "user"
+  description: "Operations about users. Manage user's cabinet."
+schemes:
+- "https"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /ingredients:
+    post:
+      tags:
+      - "cocktails"
+      summary: "Add a new ingredient"
+      description: ""
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        500:
+          description: "Internal Server Error"
