@@ -1,36 +1,642 @@
 swagger: "2.0"
+########################################################################################################################
+#                             API Information                                                                          #
+########################################################################################################################
 info:
-  description: "This is the LiquorCabinet API. Given what's in your Liquor Cabinet, find out what cocktails you can make!"
-  version: "1.0.0"
-  title: "Liquor Cabinet"
-  contact: 
-    email: "theodorecarmstrong@gmail.com"
+  title: Liquor Cabinet
+  version: v1
+  description: |
+    This is the LiquorCabinet API. Given what's in your Liquor Cabinet, find out what cocktails you can make!
+  contact:
+    email: theodorecarmstrong@gmail.com
   license:
-    name: "GNU AGPLv3"
-    url: "https://www.gnu.org/licenses/agpl-3.0.txt"
-basePath: "/v1"
-tags:
-- name: "cocktails"
-  description: "Everything about cocktails"
-- name: "user"
-  description: "Operations about users. Manage user's cabinet."
+    name: GNU AGPLv3
+    url: https://www.gnu.org/licenses/agpl-3.0.txt
+
+########################################################################################################################
+#                             Host, Base Path, Schemes and Content Types                                               #
+########################################################################################################################
+host: api.liquor-cabinet.com
+basePath: /v1
 schemes:
-- "https"
+- https
 consumes:
-- "application/json"
+- application/json
 produces:
-- "application/json"
+- application/json
+
+########################################################################################################################
+#                             Tags                                                                                     #
+########################################################################################################################
+tags:
+  - name: cocktail
+    description: |
+      Everything about cocktails
+  - name: user
+    description: |
+      Operations about users. Manage user's cabinet.
+
+########################################################################################################################
+#                             Security                                                                                 #
+########################################################################################################################
+# TODO
+
+########################################################################################################################
+#                             Parameters                                                                               #
+########################################################################################################################
+parameters:
+  IngredientId:
+    name: ingredientId
+    in: path
+    description: |
+      ID of the Ingredient
+    type: integer
+    required: true
+  RecipeId:
+    name: recipeId
+    in: path
+    description: |
+      ID of the Recipe
+    type: integer
+    required: true
+  RecipeComponentId:
+    name: recipeComponentId
+    in: path
+    description: |
+      ID of the RecipeComponent. Not a Recipe, nor a Component.
+    type: integer
+    required: true
+  UserId:
+    name: userId
+    in: path
+    description: |
+      ID of the User.
+    type: integer
+    required: true
+
+########################################################################################################################
+#                             Paths                                                                                    #
+########################################################################################################################
 paths:
   /ingredients:
     post:
       tags:
-      - "cocktails"
-      summary: "Add a new ingredient"
+      - cocktail
+      summary: Add a new ingredient
       description: ""
+      parameters:
+      - name: IngredientBody
+        in: body
+        description: |
+          The new Ingredient
+        required: true
+        schema:
+          $ref: "#/definitions/NewIngredient"
       responses:
         201:
-          description: "Created"
+          description: |
+            Created
         400:
-          description: "Bad Request"
+          description: |
+            Bad Request
         500:
-          description: "Internal Server Error"
+          description: |
+            Internal Server Error
+
+    get:
+      tags:
+      - cocktail
+      summary: Get all ingredients
+      description: |
+        Results may be paginated
+      responses:
+        200:
+          description: |
+            Successful retrieval
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Ingredient"
+        400:
+          description: |
+            Bad Request
+        500:
+          description: |
+            Internal Server Error
+
+  /ingredients/{ingredientId}:
+    get:
+      tags:
+      - cocktail
+      summary: Retrieve the ingredient by id.
+      description: ""
+      parameters:
+      - $ref: "#/parameters/IngredientId"
+      responses:
+        200:
+          description: |
+            Successful retrieval
+          schema:
+            $ref: "#/definitions/Ingredient"
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            Ingredient Not Found
+        500:
+          description: |
+            Internal Server Error
+    
+    put:
+      tags:
+      - cocktail
+      summary: Update an ingredient.
+      description: ""
+      parameters:
+      - $ref: "#/parameters/IngredientId"
+      - name: IngredientBody
+        in: body
+        description: |
+          The updated Ingredient
+        required: true
+        schema:
+          $ref: "#/definitions/Ingredient"
+      responses:
+        204:
+          description: |
+            Successful Update
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            Ingredient Not Found
+        500:
+          description: |
+            Internal Server Error
+
+    delete:
+      tags:
+      - cocktail
+      summary: Deletes an ingredient
+      description: ""
+      parameters:
+      - $ref: "#/parameters/IngredientId"
+      responses:
+        204:
+          description: |
+            Successful deletion
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            Ingredient Not Found
+        500:
+          description: |
+            Internal Server Error
+
+  /recipes:
+    get:
+      tags:
+      - cocktail
+      summary: Get all cocktail recipes
+      description: ""
+      parameters:
+      - name: userId
+        in: query
+        description: |
+          Filter the recipes on what the supplied user can create
+        required: false
+        type: string
+      responses:
+        200:
+          description: |
+            Successful retrieval
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Recipe"
+        400:
+          description: |
+            Bad Request
+        500:
+          description: |
+            Internal Server Error
+    
+    post:
+      tags:
+      - cocktail
+      summary: Create a cocktail recipe
+      description: ""
+      parameters:
+      - name: NewRecipe
+        in: body
+        description: |
+          The New Recipe to create
+        required: true
+        schema:
+          $ref: "#/definitions/NewRecipe"
+      responses:
+        201:
+          description: |
+            Successful Creation
+        400:
+          description: |
+            Bad Request
+        500:
+          description: |
+            Internal Server Error
+    
+  /recipes/{recipeId}:
+    get:
+      tags:
+      - cocktail
+      summary: Get the recipe by Recipe ID
+      description: ""
+      parameters:
+      - $ref: "#/parameters/RecipeId"
+      responses:
+        200:
+          description: |
+            Successful retrieval
+          schema:
+            $ref: "#/definitions/Recipe"
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            Recipe Not Found
+        500:
+          description: |
+            Internal Server Error
+    
+    put:
+      tags:
+      - cocktail
+      summary: Update the Recipe
+      description: |
+        Change the Name, instructions, and/or glassware
+      parameters:
+      - $ref: "#/parameters/RecipeId"
+      - name: NewRecipe
+        in: body
+        description: |
+          The recipe to update
+        required: true
+        schema:
+          $ref: "#/definitions/NewRecipe"
+      responses:
+        204:
+          description: |
+            Successful Update
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            Recipe Not Found
+        500:
+          description: |
+            Internal Server Error
+  
+  /recipes/{recipeId}/components:
+    post:
+      tags:
+      - cocktail
+      summary: Add a component to the recipe
+      description: |
+        Add a RecipeComponent to the recipe
+      parameters:
+      - $ref: "#/parameters/RecipeId"
+      - name: RecipeComponentBody
+        in: body
+        description: |
+          Relate component to a recipe.
+        required: true
+        schema:
+          $ref: "#/definitions/NewRecipeComponent"
+      responses:
+        201:
+          description: |
+            Successful Creation
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            Recipe Not Found
+        500:
+          description: |
+            Internal Server Error
+
+  /recipes/{recipeId}/components/{recipeComponentId}:
+    put:
+      tags:
+      - cocktail
+      summary: Update a RecipeComponent
+      description: |
+        Update the quantites of a RecipeComponent
+      parameters:
+      - $ref: "#/parameters/RecipeId"
+      - $ref: "#/parameters/RecipeComponentId"
+      - name: RecipeComponentBody
+        in: body
+        description: |
+          The Updated RecipeComponent.
+        required: true
+        schema:
+          $ref: "#/definitions/NewRecipeComponent"
+      responses:
+        204:
+          description: |
+            Successful Update
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            Recipe or RecipeComponent Not Found
+        500:
+          description: |
+            Internal Server Error
+
+  /users:
+    post:
+      tags:
+      - user
+      summary: Create a user.
+      description: |
+        Creates a new user to manage their liquor cabinet.
+      parameters:
+      - name: UserBody
+        in: body
+        description: |
+          The New User.
+        required: true
+        schema:
+          $ref: "#/definitions/NewUser"
+      responses:
+        201:
+          description: |
+            Successfully Created.
+        400:
+          description: |
+            Bad Request
+        500:
+          description: |
+            Internal Server Error
+
+  /users/{userId}:
+    get:
+      tags:
+      - user
+      summary: Retrieve the User by ID
+      description: ""
+      parameters:
+      - $ref: "#/parameters/UserId"
+      responses:
+        200:
+          description: |
+            Successful Retrieval
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            User Not Found
+        500:
+          description: |
+            Internal Server Error
+    
+    put:
+      tags:
+      - user
+      summary: Update the user
+      description: ""
+      parameters:
+      - $ref: "#/parameters/UserId"
+      - name: UserBody
+        in: body
+        description: |
+          The updated user.
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        204:
+          description: |
+            Successful update.
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            User Not Found
+        500: 
+          description: |
+            Internal Server Error
+
+  /users/{userId}/ingredients:
+    get:
+      tags:
+      - user
+      - cocktail
+      summary: Retrieve the list of ingredients the User owns.
+      description: |
+        Get all of the ingredients within the users Liquor Cabinet.
+      parameters:
+      - $ref: "#/parameters/UserId"
+      responses:
+        200:
+          description: |
+            Successful Retrieval
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Ingredient"
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            User Not Found
+        500:
+          description: |
+            Internal Server Error
+
+    post:
+      tags:
+      - user
+      - cocktail
+      summary: Add an ingredient to the users Liquor Cabinet
+      description: ""
+      parameters:
+      - $ref: "#/parameters/UserId"
+      - name: IngredientsBody
+        in: body
+        description: |
+          A list of Ingredient IDs
+        schema:
+          type: array
+          items:
+            type: integer
+            description: |
+              Ingredient ID.
+      responses:
+        201:
+          description: |
+            Successfully added ingredients to the users liquor cabinet
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            User or Ingredient Not Found
+        500:
+          description: |
+            Internal Server Error
+
+
+########################################################################################################################
+#                             Definitions                                                                              #
+########################################################################################################################
+definitions:
+  Recipe:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      instructions:
+        type: string
+      glassware:
+        $ref: "#/definitions/Glassware"
+      components:
+        type: array
+        items:
+          $ref: "#/definitions/RecipeComponent"
+    required:
+    - id
+    - name
+    - instructions
+    - glassware
+    - components
+
+  NewRecipe:
+    type: object
+    properties:
+      name:
+        type: string
+      instructions:
+        type: string
+      glasswareId:
+        type: integer
+    required:
+    - name
+    - instructions
+    - glasswareId
+
+  Ingredient:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+    required:
+    - id
+    - name
+    - description
+
+  NewIngredient:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+    required:
+    - name
+    - description
+  
+  RecipeComponent:
+    type: object
+    properties:
+      id:
+        type: integer
+      recipeId:
+        type: integer
+      componentId:
+        type: integer
+      quantityPart:
+        type: string
+      quantityMetric:
+        type: number
+      quantityImperial:
+        type: number
+    required:
+    - id
+    - recipeId
+    - componentId
+    - quantityPart
+    - quantityMetric
+    - quantityImperial
+
+  NewRecipeComponent:
+    type: object
+    properties:
+      recipeId:
+        type: integer
+      componentId:
+        type: integer
+      quantityPart:
+        type: string
+      quantityMetric:
+        type: number
+      quantityImperial:
+        type: number
+    required:
+    - recipeId
+    - componentId
+    - quantityPart
+
+  Glassware:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+      typicalSize:
+        type: string
+
+  NewGlassware:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      typicalSize:
+        type: string
+  
+  NewUser:
+    type: object
+  
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+    required:
+    - id
