@@ -1,0 +1,23 @@
+composition_root_project: 'LiquorCabinet.APIGatewayAdapter'
+
+application_name: 'Liquor Cabinet API'
+
+environments:
+  - name: 'production'
+    variables:
+      verbosity: 'Info'
+    description: 'Live Production Environment.'
+  - name: 'test'
+    variables:
+      verbosity: 'Debug'
+    description: 'Generic Testing environment to test deployments and whatnot.'
+
+lambdas:
+  - lambda_name: 'LiquorCabinetService'
+    handler: 'LiquorCabinet.APIGatewayAdapter::LiquorCabinet.APIGatewayAdapter.LambdaExectur::ApiGatewayProxyInvocation'
+    description: 'Backing Lambda for the Liquor Cabinet Application'
+    timeout: 20
+    memory_size: 1024
+    #role_arn: 'arn:aws:iam::652754698884:role/LambdaMicroservice'
+    runtime: 'dotnetcore1.0'
+    delete_unreferenced_versions: true

@@ -23,7 +23,7 @@ schemes:
 consumes:
 - application/json
 produces:
-- application/json
+- application/jsonl
 
 ########################################################################################################################
 #                             Tags                                                                                     #
