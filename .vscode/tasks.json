@@ -1,0 +1,12 @@
+{
+    "isShellCommand": true,
+    "args": [],
+    "tasks": [
+        {
+            "taskName": "build",
+            "execution": {
+                "commandLine": "rake build"
+            }
+        }
+    ]
+}
