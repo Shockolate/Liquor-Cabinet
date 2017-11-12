@@ -96,7 +96,7 @@ end
 desc 'Runs Unit Tests located in the src/*.UnitTests projects.'
 task :unit_test do
   Dir["#{SRC_DIR}/**/*.UnitTests/*.csproj"].each do |csproj_path|
-    cmd = "dotnet test #{csproj_path} --no-build --logger:trx;LogFileName=#{File.join(REPORTS_DIR, 'UnitTestResults.trx')}"
+    cmd = "dotnet test #{csproj_path} --no-build --logger:trx;LogFileName=#{File.join(REPORTS_DIR, "#{File.basename(csproj_path, '.csproj')}.Results.trx")}"
     puts "Running Command: #{cmd}"
     raise "Error running unit tests: #{csproj_path}" unless system(cmd)
   end
@@ -105,7 +105,7 @@ end
 desc 'Runs Integration Tests located in the src/*.IntegrationTests projects.'
 task :integration_test do
   Dir["#{SRC_DIR}/**/*.IntegrationTests/*.csproj"].each do |csproj_path|
-    cmd = "dotnet test #{csproj_path} --no-build --logger:trx;LogFileName=#{File.join(REPORTS_DIR, 'IntegrationTestResults.trx')}"
+    cmd = "dotnet test #{csproj_path} --no-build --logger:trx;LogFileName=#{File.join(REPORTS_DIR, "#{File.basename(csproj_path, '.csproj')}.Results.trx")}"
     puts "Running Command: #{cmd}"
     raise "Error running integration tests: #{csproj_path}" unless system(cmd)
   end
@@ -114,13 +114,8 @@ end
 task :dotnet_build do
   puts "Dotnet Build...."
   t1 = Time.now
-  Dir["#{SRC_DIR}/**/*.csproj"].each do |csproj_path|
-    cmd = "dotnet build #{csproj_path} --no-restore --framework=netcoreapp1.1"
-    puts "Running Command: #{cmd}"
-    raise "Error Building Project: #{csproj_path}" unless system(cmd)
-  end
-
-  cmd = "dotnet build --no-restore --framework=netcoreapp1.1"
+  
+  cmd = "dotnet build --no-restore --framework=netcoreapp1.1 /maxcpucount:1"
   puts "Running Command: #{cmd}"
   raise "Error building Solution." unless system(cmd)
 

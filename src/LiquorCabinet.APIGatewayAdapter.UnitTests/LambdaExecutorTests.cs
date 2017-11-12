@@ -1,7 +1,6 @@
-using LiquorCabinet.APIGatewayAdapter;
 using NUnit.Framework;
 
-namespace TemplateService.APIGatewayAdapter.UnitTests
+namespace LiquorCabinet.APIGatewayAdapter.UnitTests
 {
     [TestFixture]
     public class LambdaExecutorTests

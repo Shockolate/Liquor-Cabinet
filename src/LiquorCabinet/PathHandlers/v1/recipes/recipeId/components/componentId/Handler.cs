@@ -4,9 +4,9 @@ using RestfulMicroserverless.Contracts;
 
 namespace LiquorCabinet.PathHandlers.v1.recipes.recipeId.components.componentId
 {
-    internal sealed class RestfulMicroserverlessHandler1 : AbstractPathHandler
+    internal sealed class Handler : AbstractPathHandler
     {
-        public RestfulMicroserverlessHandler1(RestResponseFactory restResponseFactory) : base(restResponseFactory)
+        public Handler(RestResponseFactory restResponseFactory) : base(restResponseFactory)
         {
             VerbHandlers.Add(HttpVerb.Put, PutAsync);
         }

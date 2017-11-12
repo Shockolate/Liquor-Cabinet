@@ -1,8 +1,7 @@
 swagger: "2.0"
 info:
   version: v1
-  title: "Liquor Cabinet API"
-basePath: /v1
+  title: Liquor Cabinet API
 schemes:
 - https
 paths:
@@ -15,35 +14,35 @@ paths:
             Successful canary check
           schema:
             type: string
-            default: "pong"
+            default: pong
       x-amazon-apigateway-integration:
         requestTemplates:
           application/json: "{\"statusCode\": 200}"
         responses:
           default:
-            statusCode: "200"
+            statusCode: 200
             responseTemplates:
               application/json: "\"pong\""
-        passthroughBehavior: "when_no_match"
-        type: "mock"
+        passthroughBehavior: when_no_match
+        type: mock
 
-   /{proxy+}:
+  /{proxy+}:
     x-amazon-apigateway-any-method:
       parameters:
       - name: proxy
         in: path
         required: true
-        type: "string"
+        type: string
       responses: {}
       x-amazon-apigateway-integration:
-        credentials: "arn:aws:iam::235891526390:role/APIGatewayAWSProxyExecRole"
+        credentials: arn:aws:iam::235891526390:role/APIGatewayAWSProxyExecRole
         responses:
           default:
-            statusCode: "200"
-        uri: "arn:aws:apigateway:us-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:235891526390:function:TemplateServiceGreedyController:${stageVariables.environment}/invocations"
+            statusCode: 200
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:235891526390:function:LiquorCabinetService:${stageVariables.environment}/invocations
         passthroughBehavior: "when_no_match"
         httpMethod: POST
-        cacheNamespace: "Namespace"
+        cacheNamespace: Namespace
         cacheKeyParameters:
         - method.request.path.proxy
         type: aws_proxy

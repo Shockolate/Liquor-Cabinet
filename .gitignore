@@ -1,3 +1,7 @@
+##Restful Microserverless
+reports/
+package/
+
 ## VSCode
 .vscode/*
 !.vscode/settings.json
