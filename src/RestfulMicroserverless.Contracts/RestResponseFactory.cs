@@ -31,5 +31,13 @@
             response.Body = new {errorMessage};
             return response;
         }
+
+
+        public RestResponse CreateErrorMessageRestResponse(string errorMessage, int statusCode)
+        {
+            var response = CreateErrorMessageRestResponse(errorMessage);
+            response.StatusCode = statusCode;
+            return response;
+        }
     }
 }

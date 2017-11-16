@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
@@ -22,8 +23,8 @@ namespace LiquorCabinet.APIGatewayAdapter
         private readonly IPayloadSerializer _payloadConverter;
 
         public LambdaExecutor() : this(new LambdaLoggerWrapper(), JsonSerializerFactory.CreateJsonPayloadSerializer(),
-            new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddInMemoryCollection( /* default config strings */)
-                .AddJsonFile("LiquorCabinet.settings", true, true).Build()) { }
+            new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddInMemoryCollection(DefaultConfigurationStrings)
+                .AddJsonFile("LiquorCabinetSettings.json", true, true).Build()) { }
 
 
         public LambdaExecutor(ILogger logger, IPayloadSerializer payloadSerializer, IConfiguration configuration) : this(
@@ -36,6 +37,14 @@ namespace LiquorCabinet.APIGatewayAdapter
             _lambdaLogger = logger;
             _payloadConverter = payloadSerializer;
         }
+
+        private static IReadOnlyDictionary<string, string> DefaultConfigurationStrings { get; } = new Dictionary<string, string>
+        {
+            ["Database:Server"] = "Server",
+            ["Database:Database"] = "Database",
+            ["Database:UserId"] = "UserId",
+            ["Database:Password"] = "Password"
+        };
 
         public async Task<APIGatewayProxyResponse> ApiGatewayProxyInvocation(APIGatewayProxyRequest apiGatewayProxyRequest, ILambdaContext context)
         {

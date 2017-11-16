@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using LiquorCabinet.PathHandlers.v1.glassware;
+using LiquorCabinet.Repositories.Glasses;
 using Microsoft.Extensions.Configuration;
 using RestfulMicroserverless.Contracts;
 
@@ -10,28 +11,30 @@ namespace LiquorCabinet
         public static IEnumerable<IHttpPathHandler> CreatePathHandlers(IHttpPathHandlerFactory pathHandlerFactory, IPayloadSerializer payloadSerializer,
             IConfiguration configuration)
         {
-            // Use Configuration.
+            configuration.Bind(Settings.Settings.Instance);
+
             var restResponseFactory = new RestResponseFactory();
 
             #region Glassware Handlers
-
-            var glasswareHandler = new Handler(restResponseFactory);
+            
+            var glasswareRepository = new GlassRepository();
+            var glasswareHandler = new Handler(restResponseFactory, payloadSerializer, glasswareRepository);
 
             #endregion
 
             #region Ingredients Handlers
 
-            var ingredientsHandler = new PathHandlers.v1.ingredients.Handler(restResponseFactory);
-            var ingredientsIngredientsIdHandler = new PathHandlers.v1.ingredients.ingredientId.Handler(restResponseFactory);
+            var ingredientsHandler = new PathHandlers.v1.ingredients.Handler(restResponseFactory, payloadSerializer);
+            var ingredientsIngredientsIdHandler = new PathHandlers.v1.ingredients.ingredientId.Handler(restResponseFactory, payloadSerializer);
 
             #endregion
 
             #region Recipes Handlers
 
-            var recipesHandler = new PathHandlers.v1.recipes.Handler(restResponseFactory);
-            var recipesRecipeIdHandler = new PathHandlers.v1.recipes.recipeId.Handler(restResponseFactory);
-            var recipesRecipeIdComponentsHandler = new PathHandlers.v1.recipes.recipeId.components.Handler(restResponseFactory);
-            var recipesRecipeIdComponentsComponentIdHandler = new PathHandlers.v1.recipes.recipeId.components.componentId.Handler(restResponseFactory);
+            var recipesHandler = new PathHandlers.v1.recipes.Handler(restResponseFactory, payloadSerializer);
+            var recipesRecipeIdHandler = new PathHandlers.v1.recipes.recipeId.Handler(restResponseFactory, payloadSerializer);
+            var recipesRecipeIdComponentsHandler = new PathHandlers.v1.recipes.recipeId.components.Handler(restResponseFactory, payloadSerializer);
+            var recipesRecipeIdComponentsComponentIdHandler = new PathHandlers.v1.recipes.recipeId.components.componentId.Handler(restResponseFactory, payloadSerializer);
 
             #endregion
 

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2006
+VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwsLibrary", "src\AwsLibrary\AwsLibrary.csproj", "{63D10EE9-A54F-46D5-AAB9-542E1D434ED8}"
 EndProject
@@ -19,12 +19,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiquorCabinet.APIGatewayAda
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A72B739-41FD-4407-B61E-A0665DE45809}"
 	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
 		config\APIGatewaySwagger.yaml = config\APIGatewaySwagger.yaml
 		config\ClientSwagger.yaml = config\ClientSwagger.yaml
 		config\config.yaml = config\config.yaml
 		Gemfile = Gemfile
 		rakefile.rb = rakefile.rb
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiquorCabinet.UnitTests", "src\LiquorCabinet.UnitTests\LiquorCabinet.UnitTests.csproj", "{1D925A04-32D2-475A-84F0-949CE861F766}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +63,10 @@ Global
 		{485F5F40-A0BB-466C-AAFF-883761CE29BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{485F5F40-A0BB-466C-AAFF-883761CE29BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{485F5F40-A0BB-466C-AAFF-883761CE29BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D925A04-32D2-475A-84F0-949CE861F766}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D925A04-32D2-475A-84F0-949CE861F766}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D925A04-32D2-475A-84F0-949CE861F766}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D925A04-32D2-475A-84F0-949CE861F766}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

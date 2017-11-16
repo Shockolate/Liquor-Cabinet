@@ -6,7 +6,7 @@ namespace LiquorCabinet.PathHandlers.v1.ingredients
 {
     internal sealed class Handler : AbstractPathHandler
     {
-        public Handler(RestResponseFactory restResponseFactory) : base(restResponseFactory)
+        public Handler(RestResponseFactory restResponseFactory, IPayloadSerializer payloadSerializer) : base(restResponseFactory, payloadSerializer)
         {
             VerbHandlers.Add(HttpVerb.Post, PostAsync);
             VerbHandlers.Add(HttpVerb.Get, GetAsync);

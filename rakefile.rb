@@ -201,6 +201,16 @@ def package()
   puts "Running Command: #{cmd}"
   raise 'Error creating deployment package.' unless system(cmd)
 
+  runtimes_unix_folder = File.join(PACKAGE_DIR, 'runtimes/unix/lib/netstandard1.3')
+  
+    if File.directory?(runtimes_unix_folder)
+      puts 'Moving Unix Runtime binaries to package folder.'
+      filter_entries(runtimes_unix_folder).each do |e|
+        File.rename(File.join(runtimes_unix_folder, e), File.join(PACKAGE_DIR, e))
+      end
+      FileUtils.rm_r(File.join(PACKAGE_DIR, 'runtimes'))
+    end
+
   zip_package
 
   if CONFIGURATION[:s3] && CONFIGURATION[:s3][:secrets] && CONFIGURATION[:s3][:secrets][:bucket] && CONFIGURATION[:s3][:secrets][:key]

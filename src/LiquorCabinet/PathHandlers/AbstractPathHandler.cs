@@ -8,9 +8,11 @@ namespace LiquorCabinet.PathHandlers
     internal abstract class AbstractPathHandler
     {
         protected readonly RestResponseFactory RestResponseFactory;
-        protected AbstractPathHandler(RestResponseFactory restResponseFactory)
+        protected readonly IPayloadSerializer PayloadSerializer;
+        protected AbstractPathHandler(RestResponseFactory restResponseFactory, IPayloadSerializer payloadSerializer)
         {
             RestResponseFactory = restResponseFactory;
+            PayloadSerializer = payloadSerializer;
         }
 
         internal virtual IDictionary<HttpVerb, Func<RestRequest, ILogger, Task<RestResponse>>> VerbHandlers { get; } =

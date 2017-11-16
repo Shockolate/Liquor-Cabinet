@@ -1,9 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace RestfulMicroserverless.Contracts
 {
     public class RestResponse
     {
+        #region Fields
+
+        // default - OK
+        private int _statusCode = 200;
+
+        #endregion
+
+        #region Properties
+
         public RestResponse()
         {
             Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}};
@@ -14,10 +24,25 @@ namespace RestfulMicroserverless.Contracts
         /// </summary>
         public object Body { get; set; }
 
-        // Http Response headers RFC 2616
+        /// <summary>
+        ///     Http Response headers RFC 2616
+        /// </summary>
         public IDictionary<string, string> Headers { get; set; }
 
-        // HTTP Status Code. RFC 2616
-        public int StatusCode { get; set; }
+        /// <summary>
+        ///     HTTP Status Code. RFC 2616
+        /// </summary>
+        public int StatusCode
+        {
+            get => _statusCode;
+            set
+            {
+                if (value < 100 || value > 600)
+                    throw new ArgumentException("StatusCode must be inclusive between 100 & 500");
+                _statusCode = value;
+            }
+        }
+
+        #endregion
     }
 }

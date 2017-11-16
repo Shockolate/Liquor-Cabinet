@@ -1,6 +1,11 @@
+application_name: 'Liquor Cabinet API'
+
 composition_root_project: 'LiquorCabinet.APIGatewayAdapter'
 
-application_name: 'Liquor Cabinet API'
+s3:
+  secrets:
+    bucket: application-and-service-secrets
+    key: LiquorCabinetSettings.zip
 
 environments:
   - name: 'production'
@@ -20,4 +25,15 @@ lambdas:
     memory_size: 1024
     role_arn: 'arn:aws:iam::235891526390:role/LambdaMicroservice'
     runtime: 'dotnetcore1.0'
+    subnet_ids:
+    - subnet-59e05e64
+    - subnet-62b3a83b
+    - subnet-22cadf09
+    - subnet-e6b77790
+    - subnet-3131b83d
+    - subnet-5db9d938
+    security_group_ids:
+    - sg-46c5e920
+    - sg-8e668dfb
+    - sg-cf77adb6
     delete_unreferenced_versions: true
