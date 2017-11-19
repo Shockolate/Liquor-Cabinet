@@ -12,9 +12,9 @@ namespace RestfulMicroseverless
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
             DateParseHandling = DateParseHandling.DateTimeOffset,
-            DefaultValueHandling = DefaultValueHandling.Populate,
+            DefaultValueHandling = DefaultValueHandling.Include,
             NullValueHandling = NullValueHandling.Include,
-            MissingMemberHandling = MissingMemberHandling.Ignore
+            MissingMemberHandling = MissingMemberHandling.Error
         };
 
         public static IPayloadSerializer CreateJsonPayloadSerializer()

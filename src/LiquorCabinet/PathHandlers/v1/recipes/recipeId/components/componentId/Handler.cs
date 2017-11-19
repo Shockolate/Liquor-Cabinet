@@ -4,7 +4,7 @@ using RestfulMicroserverless.Contracts;
 
 namespace LiquorCabinet.PathHandlers.v1.recipes.recipeId.components.componentId
 {
-    internal sealed class Handler : AbstractPathHandler
+    internal sealed class Handler : BaseHandler
     {
         public Handler(RestResponseFactory restResponseFactory, IPayloadSerializer payloadSerializer) : base(restResponseFactory, payloadSerializer)
         {

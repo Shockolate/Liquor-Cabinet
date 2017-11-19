@@ -7,7 +7,7 @@ namespace RestfulMicroserverless.Contracts
     {
         #region Fields
 
-        private string _body;
+        private string _body = string.Empty;
         private HttpVerb _method;
 
         #endregion

@@ -6,7 +6,7 @@ using RestfulMicroserverless.Contracts;
 
 namespace LiquorCabinet.PathHandlers.v1.glassware
 {
-    internal sealed class Handler : AbstractPathHandler
+    internal sealed class Handler : BaseHandler
     {
         private readonly ICrudRepository<Glass, int> _glasswareCrudRepository;
 
@@ -20,10 +20,18 @@ namespace LiquorCabinet.PathHandlers.v1.glassware
 
         public async Task<RestResponse> GetAsync(RestRequest request, ILogger logger)
         {
-            var glasswareList = await _glasswareCrudRepository.GetListAsync(logger);
-            var response = RestResponseFactory.CreateCorsRestResponse(200);
-            response.Body = glasswareList;
-            return response;
+            try
+            {
+                var glasswareList = await _glasswareCrudRepository.GetListAsync(logger);
+                var response = RestResponseFactory.CreateCorsRestResponse(200);
+                response.Body = glasswareList;
+                return response;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(() => $"Persistence error on GetList: {e.Message}");
+                return RestResponseFactory.CreateErrorMessageRestResponse("Internal Server Error.", 500);
+            }
         }
 
         public async Task<RestResponse> PostAsync(RestRequest request, ILogger logger)

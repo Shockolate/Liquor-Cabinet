@@ -5,11 +5,12 @@ using RestfulMicroserverless.Contracts;
 
 namespace LiquorCabinet.PathHandlers
 {
-    internal abstract class AbstractPathHandler
+    internal abstract class BaseHandler
     {
-        protected readonly RestResponseFactory RestResponseFactory;
         protected readonly IPayloadSerializer PayloadSerializer;
-        protected AbstractPathHandler(RestResponseFactory restResponseFactory, IPayloadSerializer payloadSerializer)
+        protected readonly IRestResponseFactory RestResponseFactory;
+
+        protected BaseHandler(IRestResponseFactory restResponseFactory, IPayloadSerializer payloadSerializer)
         {
             RestResponseFactory = restResponseFactory;
             PayloadSerializer = payloadSerializer;

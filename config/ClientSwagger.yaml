@@ -696,6 +696,10 @@ definitions:
         type: string
       typicalSize:
         type: string
+    required:
+    - name
+    - description
+    - typicalSize
   
   NewUser:
     type: object

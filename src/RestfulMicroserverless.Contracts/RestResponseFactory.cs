@@ -1,6 +1,6 @@
 ﻿namespace RestfulMicroserverless.Contracts
 {
-    public class RestResponseFactory
+    public class RestResponseFactory : IRestResponseFactory
     {
         public RestResponse CreateCorsRestResponse()
         {
