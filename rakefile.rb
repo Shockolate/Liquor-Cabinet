@@ -132,7 +132,7 @@ task :lint do
   lint_code
   linting_results = parse_linting_results
 
-  unless linting_results.empty?
+  unless linting_resutls.nil? || linting_results.empty?
     puts linting_results
     # ommitting the failure until R# Works with Jenkins.
     # raise 'Failed Linting.'
