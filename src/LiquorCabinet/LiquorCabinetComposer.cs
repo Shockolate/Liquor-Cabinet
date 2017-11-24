@@ -2,6 +2,7 @@
 using LiquorCabinet.PathHandlers.v1.glassware;
 using LiquorCabinet.Repositories.Glasses;
 using LiquorCabinet.Repositories.Ingredients;
+using LiquorCabinet.Repositories.Recipes;
 using Microsoft.Extensions.Configuration;
 using RestfulMicroserverless.Contracts;
 
@@ -33,7 +34,8 @@ namespace LiquorCabinet
 
             #region Recipes Handlers
 
-            var recipesHandler = new PathHandlers.v1.recipes.Handler(restResponseFactory, payloadSerializer);
+            var recipeRepository = new RecipeRepository();
+            var recipesHandler = new PathHandlers.v1.recipes.Handler(restResponseFactory, payloadSerializer, recipeRepository);
             var recipesRecipeIdHandler = new PathHandlers.v1.recipes.recipeId.Handler(restResponseFactory, payloadSerializer);
             var recipesRecipeIdComponentsHandler = new PathHandlers.v1.recipes.recipeId.components.Handler(restResponseFactory, payloadSerializer);
             var recipesRecipeIdComponentsComponentIdHandler =

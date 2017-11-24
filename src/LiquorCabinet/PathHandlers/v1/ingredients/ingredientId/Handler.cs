@@ -97,18 +97,18 @@ namespace LiquorCabinet.PathHandlers.v1.ingredients.ingredientId
             }
             try
             {
-                logger.LogInfo((() => $"Deleting Ingredient: {ingredientId}."));
+                logger.LogInfo(() => $"Deleting Ingredient: {ingredientId}.");
                 await _ingredientRepository.DeleteAsync(ingredientId, logger);
                 return RestResponseFactory.CreateCorsRestResponse(204);
             }
             catch (EntityNotFoundException e)
             {
-                logger.LogError((() => e.Message));
+                logger.LogError(() => e.Message);
                 return RestResponseFactory.CreateErrorMessageRestResponse(e.Message, 404);
             }
             catch (Exception e)
             {
-                logger.LogError((() => $"Repository Error: {e.Message}"));
+                logger.LogError(() => $"Repository Error: {e.Message}");
                 return RestResponseFactory.CreateErrorMessageRestResponse("Internal Server Error.", 500);
             }
         }

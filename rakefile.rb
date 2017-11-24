@@ -385,6 +385,7 @@ def lint_swagger()
 end
 
 def lint_code()
+  return if which('inspectcode').nil?
   cmd = "inspectcode \"#{Dir[File.join(ROOT, '*.sln')].first}\" --output=\"#{File.join(REPORTS_DIR, 'LintResults.xml')}\" --profile=\"#{Dir[File.join(ROOT, '*.sln.DotSettings')].first}\" --severity=WARNING --toolset=15.0".gsub!(/\//, '\\') # for some reason, inspectcode can't resolve the Forward Slash seperator.
   puts "Running Command: #{cmd}"
   output = `#{cmd}`
@@ -394,6 +395,7 @@ def lint_code()
 end
 
 def parse_linting_results()
+  return if which('inspectcode').nil?
   lint_results_xml = Nokogiri::XML(File.open(File.join(REPORTS_DIR, 'LintResults.xml')))
   issue_types = Hash.new
   lint_results_xml.xpath("//IssueType").map do |issue_type_node|
@@ -430,4 +432,18 @@ def parse_linting_results()
     end
   end
   output_string
+end
+
+# Cross-platform way of finding an executable in the $PATH.
+#
+#   which('ruby') #=> /usr/bin/ruby
+def which(cmd)
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    exts.each { |ext|
+      exe = File.join(path, "#{cmd}#{ext}")
+      return exe if File.executable?(exe) && !File.directory?(exe)
+    }
+  end
+  return nil
 end

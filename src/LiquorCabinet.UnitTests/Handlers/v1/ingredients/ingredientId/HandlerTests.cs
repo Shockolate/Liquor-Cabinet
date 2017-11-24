@@ -25,14 +25,12 @@ namespace LiquorCabinet.UnitTests.Handlers.v1.ingredients.ingredientId
         private readonly RestRequest _validGetRestRequest1 = new RestRequest {Method = HttpVerb.Get, InvokedPath = "/v1/ingredients/1"};
         private readonly RestRequest _validGetRestRequest2 = new RestRequest {Method = HttpVerb.Get, InvokedPath = "/v1/ingredients/2"};
         private readonly RestRequest _notfoundGetRestRequest = new RestRequest {Method = HttpVerb.Get, InvokedPath = "/v1/ingredients/3"};
-
         private readonly RestRequest _validPutRestRequest = new RestRequest
         {
             Method = HttpVerb.Put,
             InvokedPath = "/v1/ingredients/1",
             Body = @"{""id"":1,""name"":""Vodka"",""description"":""New Description.""}"
         };
-
         private readonly RestRequest _invalidPutRestRequestMismatch400 = new RestRequest
         {
             Method = HttpVerb.Put,
@@ -40,8 +38,9 @@ namespace LiquorCabinet.UnitTests.Handlers.v1.ingredients.ingredientId
             Body = @"{""id"":1,""name"":""Vodka"",""description"":""New Description.""}"
         };
 
-        private readonly RestRequest _validDeleteRequest = new RestRequest {Method = HttpVerb.Delete, InvokedPath = "/v1/ingredients/1"};
-
+        private readonly RestRequest _validDeleteRestRequest = new RestRequest {Method = HttpVerb.Delete, InvokedPath = "/v1/ingredients/1"};
+        private readonly RestRequest _notfoundDeleteRestRequest = new RestRequest {Method = HttpVerb.Delete, InvokedPath = "/v1/ingredients/3"};
+        
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
@@ -53,7 +52,8 @@ namespace LiquorCabinet.UnitTests.Handlers.v1.ingredients.ingredientId
             _notfoundGetRestRequest.PathParameters.Add("ingredientId", "3");
             _validPutRestRequest.PathParameters.Add("ingredientId", "1");
             _invalidPutRestRequestMismatch400.PathParameters.Add("ingredientId", "2");
-            _validDeleteRequest.PathParameters.Add("ingredientId", "1");
+            _validDeleteRestRequest.PathParameters.Add("ingredientId", "1");
+            _notfoundDeleteRestRequest.PathParameters.Add("ingredientId", "3");
         }
 
         [TestCase(@"{""foo"":""bar""}")]
@@ -75,8 +75,30 @@ namespace LiquorCabinet.UnitTests.Handlers.v1.ingredients.ingredientId
         {
             Assert.DoesNotThrowAsync(async () =>
             {
-                var response = await _handlerUnderTest.DeleteAsync(_validDeleteRequest, _logger);
+                var response = await _handlerUnderTest.DeleteAsync(_validDeleteRestRequest, _logger);
                 Assert.That(response.StatusCode, Is.EqualTo(204));
+            });
+        }
+
+        [Test]
+        public void DeleteShouldReturn404OnNotFound()
+        {
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                var response = await _handlerUnderTest.DeleteAsync(_notfoundDeleteRestRequest, _logger);
+                Assert.That(response.StatusCode, Is.EqualTo(404));
+            });
+        }
+
+        [Test]
+        public void DeleteShouldReturn500OnRepositoryError()
+        {
+            var throwingIngredientRepository = new InMemoryIngredientRepository(true);
+            var handler = new Handler(_restResponseFactory, _payloadSerializer, throwingIngredientRepository);
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                var response = await handler.DeleteAsync(_validDeleteRestRequest, _logger);
+                Assert.That(response.StatusCode, Is.EqualTo(500));
             });
         }
 

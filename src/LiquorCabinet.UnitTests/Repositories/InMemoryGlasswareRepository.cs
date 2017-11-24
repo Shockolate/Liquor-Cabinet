@@ -2,21 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LiquorCabinet.Repositories;
 using LiquorCabinet.Repositories.Entities;
 using RestfulMicroserverless.Contracts;
 
 namespace LiquorCabinet.UnitTests.Repositories
 {
-    internal class InMemoryGlasswareRepository : ICrudRepository<Glass, int>
+    internal class InMemoryGlasswareRepository : BaseInMemoryRepository<Glass, int>
     {
-        private readonly bool _throws;
-
         public InMemoryGlasswareRepository() : this(false) { }
 
-        public InMemoryGlasswareRepository(bool throws)
+        public InMemoryGlasswareRepository(bool throws) : base(throws)
         {
-            _throws = throws;
             Glasses = new List<Glass> {CocktailGlass, WhiskeyTumbler};
         }
 
@@ -28,30 +24,18 @@ namespace LiquorCabinet.UnitTests.Repositories
 
         public IList<Glass> Glasses { get; }
 
-        public Task InsertAsync(Glass entityToCreate, ILogger logger)
+        protected override Task DoInsertAsync(Glass entityToCreate, ILogger logger)
         {
-            if (_throws)
-            {
-                throw new Exception("SQL Error");
-            }
-
             Glasses.Add(entityToCreate);
             return Task.CompletedTask;
         }
 
-        public Task<Glass> GetAsync(int id, ILogger logger) => throw new NotImplementedException();
+        protected override Task<Glass> DoGetAsync(int id, ILogger logger) => throw new NotImplementedException();
 
-        public Task<IEnumerable<Glass>> GetListAsync(ILogger logger)
-        {
-            if (_throws)
-            {
-                throw new Exception("SQL Error");
-            }
-            return Task.FromResult(Glasses.AsEnumerable());
-        }
+        protected override Task<IEnumerable<Glass>> DoGetListAsync(ILogger logger) => Task.FromResult(Glasses.AsEnumerable());
 
-        public Task UpdateAsync(Glass entityToUpdate, ILogger logger) => throw new NotImplementedException();
+        protected override Task DoUpdateAsync(Glass entityToUpdate, ILogger logger) => throw new NotImplementedException();
 
-        public Task DeleteAsync(int id, ILogger logger) => throw new NotImplementedException();
+        protected override Task DoDeleteAsync(int id, ILogger logger) => throw new NotImplementedException();
     }
 }

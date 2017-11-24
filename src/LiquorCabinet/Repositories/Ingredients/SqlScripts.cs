@@ -1,6 +1,6 @@
 ﻿namespace LiquorCabinet.Repositories.Ingredients
 {
-    internal class SqlScripts
+    internal static class SqlScripts
     {
         internal const string GetListIngredient = @"SELECT IngredientId AS Id, Name, Description FROM Glassware";
         internal const string InsertIngredient = @"INSERT INTO Ingredient (Name, Description) VALUES (@Name, @Description); SELECT SCOPE_IDENTITY();";

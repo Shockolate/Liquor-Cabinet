@@ -1,8 +1,7 @@
 ﻿namespace LiquorCabinet.Repositories.Entities
 {
-    internal class Ingredient : EntityBase<int>
+    internal class Ingredient : Component
     {
-        public string Name { get; set; }
         public string Description { get; set; }
     }
 }
