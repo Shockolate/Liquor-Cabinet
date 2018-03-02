@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LiquorCabinet.Repositories.Entities;
+using LiquorCabinet.Models;
 using LiquorCabinet.Repositories.Recipes;
 using NUnit.Framework;
-using RestfulMicroserverless.Contracts;
 
 namespace LiquorCabinet.UnitTests.Repositories
 {
     [TestFixture]
     public class RecipeRepositoryTests
     {
-        private ILogger _logger;
-
         private readonly IList<RecipeRow> _recipeRows = new List<RecipeRow>
         {
             new RecipeRow
@@ -111,12 +108,6 @@ namespace LiquorCabinet.UnitTests.Repositories
                 ComponentQuantityImperial = null
             }
         };
-
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
-        {
-            _logger = new UnitTestLogger();
-        }
 
         [Test]
         public void ConvertRowsToRecipesShouldSucceedWith2Recipes()

@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using LiquorCabinet.Models;
+using LiquorCabinet.Repositories;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LiquorCabinet.Repositories;
-using LiquorCabinet.Repositories.Entities;
-using RestfulMicroserverless.Contracts;
+
 
 namespace LiquorCabinet.UnitTests.Repositories
 {
-    internal class InMemoryIngredientRepository : BaseInMemoryRepository<Ingredient, int>
+    internal class InMemoryIngredientRepository : BaseInMemoryRepository<int, Ingredient>
     {
         internal Ingredient Vodka = new Ingredient {Id = 1, Name = "Vodka", Description = "Clear Spirit"};
         internal Ingredient Whiskey = new Ingredient {Id = 2, Name = "Whiskey", Description = "Bourbon is good."};
@@ -16,36 +17,38 @@ namespace LiquorCabinet.UnitTests.Repositories
 
         public InMemoryIngredientRepository(bool throws) : base(throws)
         {
-            Ingredients.Add(Vodka);
-            Ingredients.Add(Whiskey);
+            Ingredients.Add(Vodka.Id, Vodka);
+            Ingredients.Add(Whiskey.Id, Whiskey);
         }
 
-        public IList<Ingredient> Ingredients { get; } = new List<Ingredient>();
+        public IDictionary<int, Ingredient> Ingredients { get; } = new Dictionary<int, Ingredient>();
 
-        protected override Task DoInsertAsync(Ingredient entityToCreate, ILogger logger)
+        protected override Task DoInsertAsync(Ingredient entityToCreate)
         {
-            Ingredients.Add(entityToCreate);
+            Ingredients.Add(Ingredients.Max(kvp => kvp.Key) + 1, entityToCreate);
             return Task.CompletedTask;
         }
 
-        protected override Task<Ingredient> DoGetAsync(int id, ILogger logger)
+        protected override Task DoInsertListAsync(IEnumerable<Ingredient> entitesToCreate) => throw new NotImplementedException();
+
+        protected override Task<Ingredient> DoGetAsync(int id)
         {
-            var queriedIngredients = Ingredients.Where(i => i.Id == id).ToArray();
+            var queriedIngredients = Ingredients.Where(kvp => kvp.Key == id).ToArray();
             if (!queriedIngredients.Any())
             {
-                throw new EntityNotFoundException($"Ingredient: {id} Not Found");
+                throw new EntityNotFoundException("Ingredient", id);
             }
-            return Task.FromResult(queriedIngredients.First());
+            return Task.FromResult(queriedIngredients.Select(kvp => kvp.Value).First());
         }
 
-        protected override Task<IEnumerable<Ingredient>> DoGetListAsync(ILogger logger) => Task.FromResult(Ingredients.AsEnumerable());
+        protected override Task<IEnumerable<Ingredient>> DoGetListAsync() => Task.FromResult(Ingredients.Select(kvp => kvp.Value));
 
-        protected override Task DoUpdateAsync(Ingredient entityToUpdate, ILogger logger)
+        protected override Task DoUpdateAsync(Ingredient entityToUpdate)
         {
-            var ingredient = Ingredients.FirstOrDefault(i => i.Id == entityToUpdate.Id);
+            var ingredient = Ingredients.FirstOrDefault(kvp => kvp.Key == entityToUpdate.Id).Value;
             if (ingredient == null)
             {
-                throw new EntityNotFoundException($"Ingredient: {entityToUpdate.Id} Not Found");
+                throw new EntityNotFoundException("Ingredient", entityToUpdate.Id);
             }
 
             ingredient.Name = entityToUpdate.Name;
@@ -53,13 +56,13 @@ namespace LiquorCabinet.UnitTests.Repositories
             return Task.CompletedTask;
         }
 
-        protected override Task DoDeleteAsync(int id, ILogger logger)
+        protected override Task DoDeleteAsync(int id)
         {
-            if (Ingredients.Remove(Ingredients.SingleOrDefault(i => i.Id == id)))
+            if (Ingredients.Remove(Ingredients.SingleOrDefault(kvp => kvp.Key == id)))
             {
                 return Task.CompletedTask;
             }
-            throw new EntityNotFoundException($"Ingredient: {id} Not Found");
+            throw new EntityNotFoundException("Ingredient", id);
         }
     }
 }

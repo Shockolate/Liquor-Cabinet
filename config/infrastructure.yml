@@ -1,0 +1,53 @@
+#### Set Up ############################################################################################################
+AWSTemplateFormationVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+
+Resources:
+#### Globals ###########################################################################################################
+  Globals:
+    Function:
+      Runtime: dotnetcore1.0
+      AutoPublishAlias: !Ref ENVIRONMENT
+
+#### Lambda Functions ##################################################################################################
+  LiquorCabinetAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: SAM
+      DefinitionBody:
+        swagger: 2.0
+        info:
+          title:
+            Ref: AWS::StackName
+
+#### Lambda Functions ##################################################################################################
+  LiquorCabinetLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: LiquorCabinet.APIGatewayAdapter::LiquorCabinet.APIGatewayAdapter.LambdaExecutor::ApiGatewayProxyInvocation
+      Runtime: dotnetcore1.0
+      FunctionName: LiquorCabinet
+      Description: |
+        Backing Lambda for the Liquor Cabinet Aplication
+      MemorySize: 1024
+      Timeout: 20
+      Role: arn:aws:iam::235891526390:role/LambdaMicroservice
+      DeploymentPreference:
+        Type: Canary10Percent5Minutes
+        # Alarms:
+        # - !Ref AliasErrorMetricGreaterThanZeroAlarm
+        # - !Ref LatestVersionErrorMetricGreaterThanZeroAlarm
+        # Hooks:
+        #   PreTraffic: !Ref PreTrafficLambdaFunction
+        #   PostTraffic: !Ref PostTraffic
+
+      CodeUri: ./package/deployment_package.zip
+      Events:
+        ProxyApiGreedy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LiquorCabinetAPI
+            Path: /{proxy+}
+            Method: ANY
+      

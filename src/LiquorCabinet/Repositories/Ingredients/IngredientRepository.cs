@@ -1,28 +1,28 @@
-﻿using System;
+﻿using LiquorCabinet.Models;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using LiquorCabinet.Repositories.Entities;
-using RestfulMicroserverless.Contracts;
 
 namespace LiquorCabinet.Repositories.Ingredients
 {
-    internal class IngredientRepository : ICrudRepository<Ingredient, int>
+    internal class IngredientRepository : ICrudRepository<int, Ingredient>
     {
-        private readonly Func<ILogger, IDbConnection> _connectionFactory;
-        public IngredientRepository() : this(ConnectionFactory.CreateLiquorDbConnection) { }
-
-        public IngredientRepository(Func<ILogger, IDbConnection> connectionFactory)
+        private readonly ILogger _logger;
+        private readonly IDbConnectionFactory _connectionFactory;
+        
+        public IngredientRepository(ILogger<IngredientRepository> logger, IDbConnectionFactory connectionFactory)
         {
+            _logger = logger;
             _connectionFactory = connectionFactory;
         }
 
-        public async Task InsertAsync(Ingredient entityToCreate, ILogger logger)
+        public async Task InsertAsync(Ingredient entityToCreate)
         {
-            logger.LogDebug(() => "Inserting a new Ingredient...");
-            using (var connection = _connectionFactory.Invoke(logger))
+            _logger.LogDebug("Inserting a new Ingredient...");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
             {
                 connection.Open();
                 var rows = await connection.QueryAsync<int>(SqlScripts.InsertIngredient);
@@ -30,10 +30,12 @@ namespace LiquorCabinet.Repositories.Ingredients
             }
         }
 
-        public async Task<Ingredient> GetAsync(int id, ILogger logger)
+        public Task InsertListAsync(IEnumerable<Ingredient> entitiesToCreate) => throw new NotImplementedException();
+
+        public async Task<Ingredient> GetAsync(int id)
         {
-            logger.LogDebug(() => $"Getting Ingredient: {id}");
-            using (var connection = _connectionFactory.Invoke(logger))
+            _logger.LogDebug($"Getting Ingredient: {id}");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
             {
                 connection.Open();
                 var rows = await connection.QueryAsync<Ingredient>(SqlScripts.GetIngredient).ConfigureAwait(false);
@@ -41,44 +43,49 @@ namespace LiquorCabinet.Repositories.Ingredients
             }
         }
 
-        public async Task<IEnumerable<Ingredient>> GetListAsync(ILogger logger)
+        public async Task<IEnumerable<Ingredient>> GetListAsync()
         {
-            logger.LogDebug(() => "Getting all Ingredients.");
-            using (var connection = _connectionFactory.Invoke(logger))
+            _logger.LogDebug("Getting all Ingredients.");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
             {
                 connection.Open();
                 var ingredients = await connection.QueryAsync<Ingredient>(SqlScripts.GetListIngredient);
-                logger.LogDebug(() => $"Retrieved {ingredients.Count()} Ingredients.");
+                _logger.LogDebug($"Retrieved {ingredients.Count()} Ingredients.");
                 return ingredients;
             }
         }
 
-        public async Task UpdateAsync(Ingredient entityToUpdate, ILogger logger)
+        public async Task UpdateAsync(Ingredient entityToUpdate)
         {
-            logger.LogDebug(() => $"Updating Ingredient: {entityToUpdate.Id}");
-            using (var connection = _connectionFactory.Invoke(logger))
+            _logger.LogDebug($"Updating Ingredient: {entityToUpdate.Id}");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
             {
                 connection.Open();
                 var count = await connection.ExecuteAsync(SqlScripts.UpdateIngredient);
                 if (count != 1)
                 {
-                    throw new EntityNotFoundException($"Ingredient: {entityToUpdate.Id} Not Found.");
+                    throw new EntityNotFoundException("Ingredient", entityToUpdate.Id);
                 }
             }
         }
 
         public async Task DeleteAsync(int id, ILogger logger)
         {
-            logger.LogDebug(() => $"Deleting Ingredient: {id}");
-            using (var connection = _connectionFactory.Invoke(logger))
+            _logger.LogDebug($"Deleting Ingredient: {id}");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
             {
                 connection.Open();
                 var count = await connection.ExecuteAsync(SqlScripts.DeleteIngredient);
                 if (count != 1)
                 {
-                    throw new EntityNotFoundException($"Ingredient: {id} Not Found.");
+                    throw new EntityNotFoundException("Ingredient", id);
                 }
             }
+        }
+
+        public Task DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

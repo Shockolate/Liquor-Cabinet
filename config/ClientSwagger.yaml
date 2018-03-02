@@ -273,21 +273,29 @@ paths:
           description: |
             Internal Server Error
     
-    put:
+    patch:
       tags:
       - cocktail
-      summary: Update the Recipe
+      summary: Update the Recipe's name, instructions, or Glassware
       description: |
         Change the Name, instructions, and/or glassware
       parameters:
       - $ref: "#/parameters/RecipeId"
-      - name: NewRecipe
+      - name: PatchBody
         in: body
         description: |
           The recipe to update
         required: true
         schema:
-          $ref: "#/definitions/NewRecipe"
+          type: object
+          properties:
+            name:
+              type: string
+            instructions:
+              type: string
+            glasswareId:
+              type: integer
+            
       responses:
         204:
           description: |
@@ -333,10 +341,10 @@ paths:
             Internal Server Error
 
   /recipes/{recipeId}/components/{recipeComponentId}:
-    put:
+    patch:
       tags:
       - cocktail
-      summary: Update a RecipeComponent
+      summary: Update a RecipeComponent quantity.
       description: |
         Update the quantites of a RecipeComponent
       parameters:
@@ -348,11 +356,42 @@ paths:
           The Updated RecipeComponent.
         required: true
         schema:
-          $ref: "#/definitions/NewRecipeComponent"
+          type: object
+          properties:
+            quantityPart:
+              type: string
+            quantityMetric:
+              type: number
+            quantityImperial:
+              type: number
       responses:
         204:
           description: |
-            Successful Update
+            Sucessfully deleted
+        400:
+          description: |
+            Bad Request
+        404:
+          description: |
+            Recipe or RecipeComponent Not Found.
+            Could have been deleted already.
+        500:
+          description: |
+            Internal Server Error
+
+    delete:
+      tags:
+      - cocktail
+      summary: Delete a RecipeComponent from a Recipe
+      description: |
+        Dissociates a Component and Recipe
+        parameters:
+        - $ref: "#/parameters/RecipeId"
+        - $ref: "#/parameters/RecipeComponentId"
+      responses:
+        204:
+          description: |
+            Successfully deleted.
         400:
           description: |
             Bad Request
@@ -362,7 +401,6 @@ paths:
         500:
           description: |
             Internal Server Error
-
   /users:
     post:
       tags:

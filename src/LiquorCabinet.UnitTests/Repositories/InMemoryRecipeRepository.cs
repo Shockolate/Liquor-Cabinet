@@ -1,14 +1,15 @@
-﻿using System;
+﻿using LiquorCabinet.Models;
+using LiquorCabinet.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LiquorCabinet.Repositories.Entities;
-using LiquorCabinet.Repositories.Recipes;
-using RestfulMicroserverless.Contracts;
+
+
 
 namespace LiquorCabinet.UnitTests.Repositories
 {
-    internal class InMemoryRecipeRepository : BaseInMemoryRepository<Recipe, int>, IRecipeRepository
+    internal class InMemoryRecipeRepository : BaseInMemoryRepository<int, Recipe>, IRecipeRepository
     {
         private readonly Recipe _alexander = new Recipe
         {
@@ -92,29 +93,91 @@ namespace LiquorCabinet.UnitTests.Repositories
             }
         };
 
-        public readonly List<Recipe> Recipes;
+        public readonly IDictionary<int, Recipe> Recipes;
 
         public InMemoryRecipeRepository() : this(false) { }
 
         public InMemoryRecipeRepository(bool throws) : base(throws)
         {
-            Recipes = new List<Recipe> {_alexander, _americano};
+            Recipes = new Dictionary<int, Recipe> {{_alexander.Id, _alexander}, {_americano.Id, _americano}};
         }
 
-        public IEnumerable<Recipe> GetRecipeListForUserAsync(int userId, ILogger logger) => throw new NotImplementedException();
+        public Task<IEnumerable<Recipe>> GetRecipeListForUserAsync(int userId) => throw new NotImplementedException();
 
-        protected override Task DoInsertAsync(Recipe entityToCreate, ILogger logger)
+        public Task AddComponentsToRecipeAsync(int recipeId, IEnumerable<RecipeComponent> newRecipeComponents)
         {
-            Recipes.Add(entityToCreate);
+            ThrowCheck();
+            if (!Recipes.ContainsKey(recipeId))
+            {
+                throw new EntityNotFoundException("Recipe", recipeId);
+            }
+            var newRecipeComponentsArray = newRecipeComponents.ToArray();
+            if (newRecipeComponentsArray.Length == 0)
+            {
+                return Task.CompletedTask;
+            }
+            var recipeToAddTo = Recipes[recipeId];
+            var highestComponentId = recipeToAddTo.Components.Max(rc => rc.Id);
+
+            foreach (var recipeComponent in newRecipeComponentsArray)
+            {
+                if (recipeComponent.ComponentId == 99)
+                {
+                    throw new EntityNotFoundException("Component", recipeComponent.ComponentId);
+                }
+                recipeComponent.Id = ++highestComponentId;
+            }
+
+            var existingRecipeComponentsCount = recipeToAddTo.Components.Count;
+            var newRecipeComponentCount = newRecipeComponentsArray.Length;
+            ISet<int> set = new HashSet<int>(recipeToAddTo.Components.Select(c => c.ComponentId));
+            foreach (var recipeComponent in newRecipeComponentsArray)
+            {
+                set.Add(recipeComponent.ComponentId);
+            }
+
+            if (existingRecipeComponentsCount + newRecipeComponentCount != set.Count)
+            {
+                throw new ArgumentException($"Cannot add a new RecipeComponent when one exists with given ComponentId:");
+            }
+
+            foreach (var recipeComponent in newRecipeComponentsArray)
+            {
+                recipeToAddTo.Components.Add(recipeComponent);
+            }
+
             return Task.CompletedTask;
         }
 
-        protected override Task<Recipe> DoGetAsync(int id, ILogger logger) => throw new NotImplementedException();
+        protected override Task DoInsertAsync(Recipe entityToCreate)
+        {
+            Recipes.Add(entityToCreate.Id, entityToCreate);
+            return Task.CompletedTask;
+        }
 
-        protected override Task<IEnumerable<Recipe>> DoGetListAsync(ILogger logger) => Task.FromResult(Recipes.AsEnumerable());
+        protected override Task DoInsertListAsync(IEnumerable<Recipe> entitesToCreate) => throw new NotImplementedException();
 
-        protected override Task DoUpdateAsync(Recipe entityToUpdate, ILogger logger) => throw new NotImplementedException();
+        protected override Task<Recipe> DoGetAsync(int id)
+        {
+            if (Recipes.ContainsKey(id))
+            {
+                return Task.FromResult(Recipes[id]);
+            }
+            throw new EntityNotFoundException("Recipe", id);
+        }
 
-        protected override Task DoDeleteAsync(int id, ILogger logger) => throw new NotImplementedException();
+        protected override Task<IEnumerable<Recipe>> DoGetListAsync() => Task.FromResult(Recipes.Select(kvp => kvp.Value));
+
+        protected override Task DoUpdateAsync(Recipe entityToUpdate)
+        {
+            if (Recipes.ContainsKey(entityToUpdate.Id))
+            {
+                Recipes[entityToUpdate.Id] = entityToUpdate;
+                return Task.CompletedTask;
+            }
+            throw new EntityNotFoundException("Recipe", entityToUpdate.Id);
+        }
+
+        protected override Task DoDeleteAsync(int id) => throw new NotImplementedException();
     }
 }

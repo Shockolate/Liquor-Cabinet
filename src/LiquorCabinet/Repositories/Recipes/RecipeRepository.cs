@@ -1,35 +1,62 @@
-﻿using System;
+﻿using Dapper;
+using LiquorCabinet.Models;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dapper;
-using LiquorCabinet.Repositories.Entities;
-using RestfulMicroserverless.Contracts;
 
 namespace LiquorCabinet.Repositories.Recipes
 {
     internal class RecipeRepository : IRecipeRepository
     {
-        public async Task InsertAsync(Recipe entityToCreate, ILogger logger)
+        private readonly ILogger _logger;
+        private readonly IDbConnectionFactory _connectionFactory;
+
+        internal RecipeRepository(ILogger<RecipeRepository> logger, IDbConnectionFactory connectionFactory)
         {
-            logger.LogInfo(() => $"Inserting new recipe: {entityToCreate.Name}");
-            using (var connection = ConnectionFactory.CreateLiquorDbConnection(logger))
+            _logger = logger;
+            _connectionFactory = connectionFactory;
+        }
+
+        public async Task InsertAsync(Recipe entityToCreate)
+        {
+            _logger.LogInformation($"Inserting new recipe: {entityToCreate.Name}");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
             {
                 connection.Open();
                 var recipeId = await connection.QueryAsync<int>(SqlScripts.InsertRecipe,
                     new {entityToCreate.Name, entityToCreate.Instructions, GlasswareId = entityToCreate.Glassware.Id});
-                await connection.ExecuteAsync(SqlScripts.InsertRecipeComponentQuery,
-                    entityToCreate.Components.Select(c =>
-                        new {RecipeId = recipeId, c.ComponentId, c.QuantityPart, c.QuantityMetric, c.QuantityImperial}));
+                await connection.ExecuteAsync(SqlScripts.InsertRecipeComponent,
+                    entityToCreate.Components.Select(c => new {RecipeId = recipeId, c.ComponentId, c.QuantityPart, c.QuantityMetric, c.QuantityImperial}));
             }
         }
 
-        public Task<Recipe> GetAsync(int id, ILogger logger) => throw new NotImplementedException();
-
-        public async Task<IEnumerable<Recipe>> GetListAsync(ILogger logger)
+        public Task InsertListAsync(IEnumerable<Recipe> entitiesToCreate)
         {
-            logger.LogInfo(() => "Getting all recipes...");
-            using (var connection = ConnectionFactory.CreateLiquorDbConnection(logger))
+            throw new NotImplementedException();
+        }
+
+        public async Task<Recipe> GetAsync(int id)
+        {
+            _logger.LogInformation($"Getting recipe for {id}");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
+            {
+                connection.Open();
+                var rows = await connection.QueryAsync<RecipeRow>(SqlScripts.GetRecipe, new {RecipeId = id});
+                var recipeRows = rows as RecipeRow[] ?? rows.ToArray();
+                if (!recipeRows.Any())
+                {
+                    throw new EntityNotFoundException("Recipe", id);
+                }
+                return ConvertRecipeRowsToRecipes(recipeRows).Single();
+            }
+        }
+
+        public async Task<IEnumerable<Recipe>> GetListAsync()
+        {
+            _logger.LogInformation("Getting all recipes...");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
             {
                 connection.Open();
                 var rows = await connection.QueryAsync<RecipeRow>(SqlScripts.GetAllRecipes);
@@ -37,11 +64,42 @@ namespace LiquorCabinet.Repositories.Recipes
             }
         }
 
-        public Task UpdateAsync(Recipe entityToUpdate, ILogger logger) => throw new NotImplementedException();
+        public async Task UpdateAsync(Recipe entityToUpdate)
+        {
+            _logger.LogInformation($"Updating Recipe: {entityToUpdate.Id}");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
+            {
+                connection.Open();
+                var rows = await connection.ExecuteAsync(SqlScripts.UpdateRecipe,
+                    new {RecipeId = entityToUpdate.Id, entityToUpdate.Name, entityToUpdate.Instructions, GlasswareId = entityToUpdate.Glassware.Id});
+                if (rows == 0)
+                {
+                    throw new EntityNotFoundException("Recipe", entityToUpdate.Id);
+                }
+            }
+        }
 
-        public Task DeleteAsync(int id, ILogger logger) => throw new NotImplementedException();
+        public Task DeleteAsync(int id) => throw new NotImplementedException();
 
-        public IEnumerable<Recipe> GetRecipeListForUserAsync(int userId, ILogger logger) => throw new NotImplementedException();
+        public Task<IEnumerable<Recipe>> GetRecipeListForUserAsync(int userId) => throw new NotImplementedException();
+
+        public async Task AddComponentsToRecipeAsync(int recipeId, IEnumerable<RecipeComponent> recipeComponents)
+        {
+            var recipeComponentsArray = recipeComponents.ToArray();
+            _logger.LogInformation($"Adding Components: {recipeComponentsArray.Select(rc => $"{rc.ComponentId}, ")} to Recipe: {recipeId}");
+            using (var connection = _connectionFactory.CreateLiquorDbConnection())
+            {
+                connection.Open();
+                var sqlParameters = recipeComponentsArray.Select(rc =>
+                    new {RecipeId = recipeId, rc.ComponentId, rc.QuantityPart, rc.QuantityMetric, rc.QuantityImperial});
+                var rows = await connection.ExecuteAsync(SqlScripts.InsertRecipeComponent, sqlParameters);
+
+                if (rows != recipeComponentsArray.Length)
+                {
+                    throw new Exception("Rows affected does not match Recipe Components.");
+                }
+            }
+        }
 
         internal static IEnumerable<Recipe> ConvertRecipeRowsToRecipes(IEnumerable<RecipeRow> recipeRows)
         {

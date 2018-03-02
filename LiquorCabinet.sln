@@ -1,21 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2008
+VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwsLibrary", "src\AwsLibrary\AwsLibrary.csproj", "{63D10EE9-A54F-46D5-AAB9-542E1D434ED8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestfulMicroserverless.Contracts", "src\RestfulMicroserverless.Contracts\RestfulMicroserverless.Contracts.csproj", "{DF70C26C-1FF8-4C76-96BC-A8EFB18C4E73}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestfulMicroseverless", "src\RestfulMicroserverless\RestfulMicroseverless.csproj", "{D08207DE-5216-4373-9DC1-46DABB3BE90D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestfulMicroserverless.UnitTests", "src\RestfulMicroserverless.UnitTests\RestfulMicroserverless.UnitTests.csproj", "{6CC07ADD-0B7D-4298-A90D-68A40B5F0482}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiquorCabinet", "src\LiquorCabinet\LiquorCabinet.csproj", "{5B74E183-34DF-427C-B680-379599D81C69}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiquorCabinet.APIGatewayAdapter", "src\LiquorCabinet.APIGatewayAdapter\LiquorCabinet.APIGatewayAdapter.csproj", "{B3084169-AD9D-4417-9B07-C64095A9CEE0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiquorCabinet.APIGatewayAdapter.UnitTests", "src\LiquorCabinet.APIGatewayAdapter.UnitTests\LiquorCabinet.APIGatewayAdapter.UnitTests.csproj", "{485F5F40-A0BB-466C-AAFF-883761CE29BC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A72B739-41FD-4407-B61E-A0665DE45809}"
 	ProjectSection(SolutionItems) = preProject
@@ -35,34 +23,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{63D10EE9-A54F-46D5-AAB9-542E1D434ED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{63D10EE9-A54F-46D5-AAB9-542E1D434ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{63D10EE9-A54F-46D5-AAB9-542E1D434ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63D10EE9-A54F-46D5-AAB9-542E1D434ED8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF70C26C-1FF8-4C76-96BC-A8EFB18C4E73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF70C26C-1FF8-4C76-96BC-A8EFB18C4E73}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF70C26C-1FF8-4C76-96BC-A8EFB18C4E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF70C26C-1FF8-4C76-96BC-A8EFB18C4E73}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D08207DE-5216-4373-9DC1-46DABB3BE90D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D08207DE-5216-4373-9DC1-46DABB3BE90D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D08207DE-5216-4373-9DC1-46DABB3BE90D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D08207DE-5216-4373-9DC1-46DABB3BE90D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CC07ADD-0B7D-4298-A90D-68A40B5F0482}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CC07ADD-0B7D-4298-A90D-68A40B5F0482}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CC07ADD-0B7D-4298-A90D-68A40B5F0482}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CC07ADD-0B7D-4298-A90D-68A40B5F0482}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5B74E183-34DF-427C-B680-379599D81C69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5B74E183-34DF-427C-B680-379599D81C69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B74E183-34DF-427C-B680-379599D81C69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B74E183-34DF-427C-B680-379599D81C69}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B3084169-AD9D-4417-9B07-C64095A9CEE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3084169-AD9D-4417-9B07-C64095A9CEE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3084169-AD9D-4417-9B07-C64095A9CEE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3084169-AD9D-4417-9B07-C64095A9CEE0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{485F5F40-A0BB-466C-AAFF-883761CE29BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{485F5F40-A0BB-466C-AAFF-883761CE29BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{485F5F40-A0BB-466C-AAFF-883761CE29BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{485F5F40-A0BB-466C-AAFF-883761CE29BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D925A04-32D2-475A-84F0-949CE861F766}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1D925A04-32D2-475A-84F0-949CE861F766}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D925A04-32D2-475A-84F0-949CE861F766}.Release|Any CPU.ActiveCfg = Release|Any CPU
